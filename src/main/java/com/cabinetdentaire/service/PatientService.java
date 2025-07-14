@@ -5,6 +5,7 @@ import com.cabinetdentaire.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +43,9 @@ public class PatientService {
             patient.setAdresse(patientDetails.getAdresse());
             patient.setTelephone(patientDetails.getTelephone());
             patient.setEmail(patientDetails.getEmail());
+            patient.setCin(patientDetails.getCin());
+            patient.setTypeAssurance(patientDetails.getTypeAssurance());
+            patient.setHistoriqueConsultations(patientDetails.getHistoriqueConsultations());
             return patientRepository.save(patient);
         }
         return null;
@@ -71,9 +75,32 @@ public class PatientService {
         return patientRepository.findByTelephone(telephone);
     }
 
-    // Rechercher avec filtres
-    public List<Patient> rechercherAvecFiltres(String nom, String prenom, String email) {
-        return patientRepository.findByFilters(nom, prenom, email);
+    // Rechercher un patient par CIN
+    public Optional<Patient> obtenirPatientParCin(String cin) {
+        return patientRepository.findByCin(cin);
+    }
+
+    // Rechercher des patients par type d'assurance
+    public List<Patient> obtenirPatientsParTypeAssurance(String typeAssurance) {
+        return patientRepository.findByTypeAssurance(typeAssurance);
+    }
+
+    // Rechercher avec filtres mis à jour
+    public List<Patient> rechercherAvecFiltres(String nom, String prenom, String email, String cin, String typeAssurance) {
+        return patientRepository.findByFilters(nom, prenom, email, cin, typeAssurance);
+    }
+
+    // Ajouter une consultation à l'historique
+    public Patient ajouterConsultation(Long patientId, LocalDate dateConsultation) {
+        Optional<Patient> patientOptional = patientRepository.findById(patientId);
+        if (patientOptional.isPresent()) {
+            Patient patient = patientOptional.get();
+            if (patient.getHistoriqueConsultations() == null) {
+                patient.setHistoriqueConsultations(new java.util.ArrayList<>());
+            }
+            patient.getHistoriqueConsultations().add(dateConsultation);
+            return patientRepository.save(patient);
+        }
+        return null;
     }
 }
-
