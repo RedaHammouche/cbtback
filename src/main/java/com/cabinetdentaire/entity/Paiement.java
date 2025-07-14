@@ -6,8 +6,12 @@ import jakarta.validation.constraints.Positive;
 import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "paiements")
 public class Paiement {
@@ -16,9 +20,9 @@ public class Paiement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER) // Changé de LAZY à EAGER
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "consultation_id", nullable = false)
-    @JsonManagedReference // Pour éviter les références circulaires
+    @JsonManagedReference
     private Consultation consultation;
 
     @NotNull(message = "Le montant est obligatoire")
@@ -39,54 +43,11 @@ public class Paiement {
         CARTE, ESPECES, CHEQUE, VIREMENT
     }
 
-    // Constructeurs
-    public Paiement() {}
-
+    // Constructeur personnalisé (sans ID car il est auto-généré)
     public Paiement(Consultation consultation, Double montant, LocalDateTime datePaiement, ModePaiement modePaiement) {
         this.consultation = consultation;
         this.montant = montant;
         this.datePaiement = datePaiement;
-        this.modePaiement = modePaiement;
-    }
-
-    // Getters et Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Consultation getConsultation() {
-        return consultation;
-    }
-
-    public void setConsultation(Consultation consultation) {
-        this.consultation = consultation;
-    }
-
-    public Double getMontant() {
-        return montant;
-    }
-
-    public void setMontant(Double montant) {
-        this.montant = montant;
-    }
-
-    public LocalDateTime getDatePaiement() {
-        return datePaiement;
-    }
-
-    public void setDatePaiement(LocalDateTime datePaiement) {
-        this.datePaiement = datePaiement;
-    }
-
-    public ModePaiement getModePaiement() {
-        return modePaiement;
-    }
-
-    public void setModePaiement(ModePaiement modePaiement) {
         this.modePaiement = modePaiement;
     }
 }
